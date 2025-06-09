@@ -1,5 +1,38 @@
 select * from sales_info;
 
+
+-- Explore Cancellation Reasons
+select Cancellation_Reason, count(Cancellation_Reason) as total
+from sales_info
+group by Cancellation_Reason;
+
+--  Track Cancellations Over Time
+select date_format(Cancellation_Date, '%y-%m') as cancellation_date, count(Cancellation_Date) as total_cancellation
+from sales_info
+group by date_format(Cancellation_Date, '%y-%m')
+order by date_format(Cancellation_Date, '%y-%m');
+
+-- Track Cancellations Over Time
+select count(distinct Purchase_Location) as total_location
+from sales_info;	
+
+-- Analyze Contract Status
+select Contract_Status, count(Contract_Status) as total_Contract_Status
+from sales_info
+group by Contract_Status;
+
+
+-- finding null
+select
+sum(case when Contract_Status is null then 1 else 0 end) as null_contract_status,
+sum(case when Cancellation_Date is null then 1 else 0 end) as null_Cancellation_Date,
+sum(case when Cancellation_Reason is null then 1 else 0 end) as null_Cancellation_Reason
+from sales_info;
+
+-- total rows
+select count(*) as count_rows
+from sales_info;
+
 select date_format(Sale_Dt, '%y-%m') as date_purchase, Customer_Type, Points_Purchase, 
 lag(Points_Purchase) over(partition by date_format(Sale_Dt, '%y-%m') order by Customer_Type desc) as yoy
 from sales_info 
