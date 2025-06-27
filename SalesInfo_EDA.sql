@@ -33,11 +33,19 @@ from sales_info;
 select count(*) as count_rows
 from sales_info;
 
-select date_format(Sale_Dt, '%y-%m') as date_purchase, Customer_Type, Points_Purchase, 
-lag(Points_Purchase) over(partition by date_format(Sale_Dt, '%y-%m') order by Customer_Type desc) as yoy
+-- YOY 
+with summary1 as
+(
+select date_format(Sale_Dt, '%Y') as date_purchase, Customer_Type, sum(Points_Purchase) as P_Purchase
 from sales_info 
-group by date_purchase,Customer_Type, Points_Purchase;
+group by date_purchase, Customer_Type
+), summary2 as
+(
+select *, lag(P_Purchase) over(partition by Customer_Type order by date_purchase asc) as yoy
+from summary1
+) select * from summary2;
 
+--
 select Purchase_Location, sum(Points_Purchase) as Points_purchase
 from sales_info
 group by Purchase_Location
